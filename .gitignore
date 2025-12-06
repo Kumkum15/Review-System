@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+env/
+ENV/
+
+# Environment variables files
+.env
+.env.local
+.env.example (you can keep this, but remove real keys)
+
+# Streamlit and FastAPI caches
+.streamlit/
+logs/
+*.log
+
+# SQLite database
+*.db
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+
+# PyInstaller
+*.spec
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Git ignored temp
+*.tmp
+*.temp
+
+# Node (if any)
+node_modules/
+
+# Backend build files
+__pycache__/
