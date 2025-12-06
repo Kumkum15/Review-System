@@ -110,9 +110,3 @@ def stats(db: Session = Depends(get_db)):
 
     return {"total": total, "average_rating": avg_rating, "distribution": dist}
 
-import uvicorn
-import os
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=port, reload=False)
