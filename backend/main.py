@@ -109,3 +109,5 @@ def stats(db: Session = Depends(get_db)):
         dist[str(r.rating)] += 1
 
     return {"total": total, "average_rating": avg_rating, "distribution": dist}
+
+

@@ -5,4 +5,4 @@ pydantic
 python-dotenv
 requests
 typing_extensions
-google-generative-ai
+google-genai
