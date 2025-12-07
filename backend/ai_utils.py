@@ -4,9 +4,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Get API key
 API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL = os.getenv("GEN_MODEL", "gemini-1.5-flash-latest")
 
+# Use a VALID Google REST model name
+MODEL = os.getenv("GEN_MODEL", "gemini-1.5-flash")
+
+# Correct REST API endpoint
 BASE_URL_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
 )
@@ -17,10 +21,14 @@ def call_gemini(prompt: str, max_output_tokens: int = 256) -> str:
 
     url = BASE_URL_TEMPLATE.format(model=MODEL, key=API_KEY)
 
+    # Correct v1beta REST payload format
     payload = {
         "contents": [
             {
-                "parts": [{"text": prompt}]
+                "role": "user",
+                "parts": [
+                    {"text": prompt}
+                ]
             }
         ],
         "generationConfig": {
@@ -34,6 +42,8 @@ def call_gemini(prompt: str, max_output_tokens: int = 256) -> str:
         r.raise_for_status()
 
         data = r.json()
+
+        # correct extraction for REST API
         return data["candidates"][0]["content"]["parts"][0]["text"]
 
     except Exception as e:
