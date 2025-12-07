@@ -19,7 +19,7 @@ if st.button("Refresh"):
 # -----------------------------
 def fetch_submissions():
     try:
-        r = requests.get(f"{BASE_URL}/submissions")
+        r = requests.get(f"{BACKEND}/submissions")
         return r.json()
     except:
         st.error("Could not fetch submissions from backend.")
@@ -27,7 +27,7 @@ def fetch_submissions():
 
 def fetch_stats():
     try:
-        r = requests.get(f"{BASE_URL}/stats")
+        r = requests.get(f"{BACKEND}/stats")
         return r.json()
     except:
         st.error("Could not fetch stats.")

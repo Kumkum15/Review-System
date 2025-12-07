@@ -1,7 +1,6 @@
-# backend/models.py
-
-from sqlalchemy import Column, Integer, String, Text, DateTime, func
-from .db import Base   # <— MUST import Base from db.py
+from sqlalchemy import Column, Integer, String, DateTime, Text
+from datetime import datetime
+from .db import Base
 
 class Submission(Base):
     __tablename__ = "submissions"
@@ -12,4 +11,4 @@ class Submission(Base):
     user_response = Column(Text, nullable=True)
     summary = Column(Text, nullable=True)
     actions = Column(Text, nullable=True)
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
