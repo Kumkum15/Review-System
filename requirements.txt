@@ -1,10 +1,6 @@
 fastapi==0.95.2
-uvicorn[standard]==0.22.0
-SQLAlchemy==2.0.20
+uvicorn==0.22.0
+sqlalchemy==2.0.44
 pydantic==1.10.12
-python-dotenv==1.0.0
-requests==2.31.0
-alembic==1.11.1        # optional - ignored unless you use migrations
-streamlit==1.22.0
-pandas==2.2.3
-altair==4.2.2
+requests
+streamlit

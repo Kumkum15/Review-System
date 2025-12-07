@@ -1,53 +1,121 @@
 import streamlit as st
 import pandas as pd
 import requests
-import os
+import plotly.express as px
+
+# -------------------------------
+# BACKEND URL
+# -------------------------------
+BACKEND_URL = "https://review-system-yb2p.onrender.com"   # ← your backend API
+
 
 st.set_page_config(page_title="Admin Dashboard", layout="wide")
-BACKEND = os.getenv("BACKEND_URL", "http://localhost:8000").rstrip("/")
 
 st.title("Admin Dashboard: Submissions")
+st.write("")
+
+# -------------------------------
+# LOAD ALL SUBMISSIONS
+# -------------------------------
+@st.cache_data(ttl=30)
+def load_submissions():
+    try:
+        r = requests.get(f"{BACKEND_URL}/submissions")
+        if r.status_code == 200:
+            return pd.json_normalize(r.json())
+        return pd.DataFrame()
+    except:
+        return pd.DataFrame()
+
+# -------------------------------
+# LOAD STATS
+# -------------------------------
+def load_stats():
+    try:
+        r = requests.get(f"{BACKEND_URL}/stats")
+        if r.status_code == 200:
+            return r.json()
+        return None
+    except:
+        return None
+
 
 if st.button("Refresh"):
-    st.experimental_rerun()
+    st.cache_data.clear()
 
-def fetch_submissions():
-    try:
-        r = requests.get(f"{BACKEND}/submissions", timeout=10)
-        r.raise_for_status()
-        return r.json()
-    except Exception as e:
-        st.error(f"Could not fetch submissions: {e}")
-        return []
 
-def fetch_stats():
-    try:
-        r = requests.get(f"{BACKEND}/stats", timeout=10)
-        r.raise_for_status()
-        return r.json()
-    except Exception as e:
-        st.error(f"Could not fetch stats: {e}")
-        return {"total": 0, "average_rating": 0, "distribution": {}}
+df = load_submissions()
 
-data = fetch_submissions()
-stats = fetch_stats()
+# -------------------------------
+# SHOW DATA TABLE
+# -------------------------------
+st.subheader("All Submissions")
 
-st.header("All Submissions")
-if not data:
-    st.info("No submissions yet.")
+if df.empty:
+    st.info("No data found.")
 else:
-    df = pd.DataFrame(data).sort_values(by="id", ascending=True).reset_index(drop=True)
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(
+        df[["id", "rating", "review", "user_response", "summary", "actions"]],
+        use_container_width=True
+    )
 
-st.header("Stats")
-st.write(f"**Total Reviews:** {stats.get('total', 0)}")
-st.write(f"**Average Rating:** {round(stats.get('average_rating', 0.0), 2)}")
-st.write(f"**Distribution:** {stats.get('distribution', {})}")
+# -------------------------------
+# STATS SECTION
+# -------------------------------
+st.subheader("Stats")
 
-# rating chart
-if stats.get("distribution"):
-    chart_df = pd.DataFrame({
-        "rating": list(stats["distribution"].keys()),
-        "count": list(stats["distribution"].values()),
-    })
-    st.bar_chart(chart_df.set_index("rating"))
+stats = load_stats()
+if stats:
+    st.write(f"**Total Reviews:** {stats['total']}")
+    st.write(f"**Average Rating:** {round(stats['average_rating'], 2)}")
+    st.write(f"**Distribution:** {stats['distribution']}")
+
+# -------------------------------
+# RATING DISTRIBUTION CHART
+# -------------------------------
+if not df.empty:
+    st.subheader("Rating Distribution Chart")
+
+    fig = px.histogram(
+        df,
+        x="rating",
+        nbins=5,
+        title="Rating Distribution",
+        labels={"rating": "Rating", "count": "Count"}
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+# -------------------------------
+# SUBMISSION TIMELINE
+# -------------------------------
+if not df.empty:
+    st.subheader("Submission Timeline")
+
+    df["created_at"] = pd.to_datetime(df["created_at"])
+
+    fig2 = px.line(
+        df.sort_values("created_at"),
+        x="created_at",
+        y="id",
+        markers=True,
+        title="Submission Timeline"
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+
+
+# -------------------------------
+# VIEW DETAILED REVIEW BY ID
+# -------------------------------
+st.subheader("View Detailed Review by ID")
+
+review_id = st.text_input("Enter Review ID")
+
+if review_id:
+    try:
+        r = requests.get(f"{BACKEND_URL}/submissions/{review_id}")
+        if r.status_code == 200:
+            st.json(r.json())
+        else:
+            st.error("Review not found.")
+    except:
+        st.error("Server error.")
