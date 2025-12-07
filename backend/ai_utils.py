@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL = "gemini-1.0-pro"   # FINAL FIX – WORKS WITH generateContent
+MODEL = "gemini-1.0-pro"
 
 BASE_URL_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
@@ -37,3 +37,33 @@ def call_gemini(prompt: str, max_output_tokens: int = 256) -> str:
 
     except Exception as e:
         return f"(AI error) {str(e)}"
+
+
+# ---------------------------------------------------
+# REQUIRED FUNCTIONS (YOUR MAIN.PY DEPENDS ON THESE)
+# ---------------------------------------------------
+
+def generate_user_response(rating: int, review: str) -> str:
+    prompt = f"""
+    Write a short friendly reply to this customer review.
+    Rating: {rating}
+    Review: {review}
+    Keep the tone positive and simple.
+    """
+    return call_gemini(prompt)
+
+def generate_summary(review: str) -> str:
+    prompt = f"""
+    Summarize this customer review in one short sentence:
+    {review}
+    """
+    return call_gemini(prompt)
+
+def generate_actions(rating: int, review: str) -> str:
+    prompt = f"""
+    Based on the customer's rating ({rating}) and review:
+    "{review}"
+
+    Suggest 2 improvement actions for the business.
+    """
+    return call_gemini(prompt)

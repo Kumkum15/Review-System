@@ -1,10 +1,9 @@
-# backend/main.py
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from .db import SessionLocal, engine, Base
 from .models import Submission
-from .ai_utils import generate_user_response, generate_summary, generate_actions
+from .ai_utils import call_gemini
 from fastapi.middleware.cors import CORSMiddleware
 
 Base.metadata.create_all(bind=engine)
@@ -47,16 +46,9 @@ def submit(payload: SubmissionIn, db: Session = Depends(get_db)):
     if not (1 <= payload.rating <= 5):
         raise HTTPException(status_code=400, detail="rating must be 1-5")
 
-    user_response = generate_user_response(payload.rating, payload.review)
-    summary = generate_summary(payload.review)
-    actions = generate_actions(payload.rating, payload.review)
-
     item = Submission(
         rating=payload.rating,
         review=payload.review,
-        user_response=user_response,
-        summary=summary,
-        actions=actions,
     )
     db.add(item)
     db.commit()
