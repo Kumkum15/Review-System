@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL = os.getenv("GEN_MODEL", "gemini-1.5-flash")
+MODEL = "gemini-pro"   # <-- FIXED MODEL NAME
 
 BASE_URL_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
@@ -20,9 +20,7 @@ def call_gemini(prompt: str, max_output_tokens: int = 256) -> str:
     payload = {
         "contents": [
             {
-                "parts": [
-                    {"text": prompt}
-                ]
+                "parts": [{"text": prompt}]
             }
         ],
         "generationConfig": {
@@ -52,13 +50,15 @@ def generate_user_response(rating: int, review: str) -> str:
 
 
 def generate_summary(review: str) -> str:
-    prompt = f"Summarize this review in one short sentence:\n\"{review}\""
-    return call_gemini(prompt, max_output_tokens=60)
+    return call_gemini(
+        f"Summarize this review in one sentence:\n\"{review}\"",
+        max_output_tokens=60
+    )
 
 
 def generate_actions(rating: int, review: str) -> str:
     prompt = (
-        f"Based on rating {rating}/5 and review:\n\"{review}\"\n"
+        f"Based on rating {rating}/5 and review:\n\"{review}\",\n"
         "List 3 improvement action items."
     )
     return call_gemini(prompt, max_output_tokens=80)
