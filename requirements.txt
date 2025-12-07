@@ -1,6 +1,9 @@
 fastapi==0.95.2
-uvicorn==0.22.0
+uvicorn[standard]==0.22.0
 sqlalchemy==2.0.44
-pydantic==1.10.12
+python-dotenv
 requests
-streamlit
+pydantic==1.10.12
+streamlit==1.20.0
+pandas==2.0.3
+plotly==5.18.0
