@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")  # set this on Render (or .env locally)
-MODEL = os.getenv("GEN_MODEL", "gemini-1.0-pro")
+MODEL = os.getenv("GEN_MODEL", "gemini-1.5-flash")
 
 BASE_URL_TEMPLATE = "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
 
