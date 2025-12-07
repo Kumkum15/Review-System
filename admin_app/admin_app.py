@@ -1,22 +1,17 @@
 import streamlit as st
 import pandas as pd
 import requests
-import plotly.express as px
-
-# -------------------------------
-# BACKEND URL
-# -------------------------------
-BACKEND_URL = "https://review-system-yb2p.onrender.com"
-
 
 st.set_page_config(page_title="Admin Dashboard", layout="wide")
+
+BACKEND_URL = "https://review-system-yb2p.onrender.com"
 
 st.title("Admin Dashboard: Submissions")
 st.write("")
 
-# -------------------------------
-# LOAD ALL SUBMISSIONS
-# -------------------------------
+# -----------------------------
+# LOAD SUBMISSIONS
+# -----------------------------
 @st.cache_data(ttl=30)
 def load_submissions():
     try:
@@ -27,9 +22,10 @@ def load_submissions():
     except:
         return pd.DataFrame()
 
-# -------------------------------
+
+# -----------------------------
 # LOAD STATS
-# -------------------------------
+# -----------------------------
 def load_stats():
     try:
         r = requests.get(f"{BACKEND_URL}/stats")
@@ -43,25 +39,25 @@ def load_stats():
 if st.button("Refresh"):
     st.cache_data.clear()
 
-
 df = load_submissions()
 
-# -------------------------------
-# SHOW DATA TABLE
-# -------------------------------
+# -----------------------------
+# TABLE
+# -----------------------------
 st.subheader("All Submissions")
 
 if df.empty:
     st.info("No data found.")
 else:
     st.dataframe(
-        df[["id", "rating", "review", "user_response", "summary", "actions"]],
+        df[["id", "rating", "review", "user_response", "summary", "actions", "created_at"]],
         use_container_width=True
     )
 
-# -------------------------------
-# STATS SECTION
-# -------------------------------
+
+# -----------------------------
+# STATS
+# -----------------------------
 st.subheader("Stats")
 
 stats = load_stats()
@@ -70,42 +66,25 @@ if stats:
     st.write(f"**Average Rating:** {round(stats['average_rating'], 2)}")
     st.write(f"**Distribution:** {stats['distribution']}")
 
-# -------------------------------
-# RATING DISTRIBUTION CHART
-# -------------------------------
+
+# -----------------------------
+# CHARTS (Plotly removed — ensure no import errors)
+# -----------------------------
 if not df.empty:
     st.subheader("Rating Distribution Chart")
+    st.bar_chart(df["rating"].value_counts().sort_index())
 
-    fig = px.histogram(
-        df,
-        x="rating",
-        nbins=5,
-        title="Rating Distribution",
-        labels={"rating": "Rating", "count": "Count"}
-    )
-    st.plotly_chart(fig, use_container_width=True)
 
-# -------------------------------
-# SUBMISSION TIMELINE
-# -------------------------------
 if not df.empty:
     st.subheader("Submission Timeline")
-
     df["created_at"] = pd.to_datetime(df["created_at"])
-
-    fig2 = px.line(
-        df.sort_values("created_at"),
-        x="created_at",
-        y="id",
-        markers=True,
-        title="Submission Timeline"
-    )
-    st.plotly_chart(fig2, use_container_width=True)
+    df_sorted = df.sort_values("created_at")
+    st.line_chart(df_sorted.set_index("created_at")["id"])
 
 
-# -------------------------------
-# VIEW DETAILED REVIEW BY ID
-# -------------------------------
+# -----------------------------
+# VIEW SINGLE REVIEW
+# -----------------------------
 st.subheader("View Detailed Review by ID")
 
 review_id = st.text_input("Enter Review ID")
@@ -118,4 +97,4 @@ if review_id:
         else:
             st.error("Review not found.")
     except:
-        st.error("Server error.")
+        st.error("Server error. Check backend URL.")
