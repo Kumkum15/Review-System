@@ -5,7 +5,7 @@ BACKEND = "https://review-system-yb2p.onrender.com"
 
 st.title("Leave a Review")
 
-rating = st.radio("Rating", [1, 2, 3, 4, 5], index=None)
+rating = st.radio("Rating", [5, 4, 3, 2, 1], index=None)
 
 review_text = st.text_area("Write your review")
 
@@ -20,3 +20,14 @@ if st.button("Submit Review"):
             st.success("Thanks!! Your review matters a lot!")
         except Exception as e:
             st.error(str(e))
+
+if r.status_code == 200:
+    result = r.json()
+    st.success("Thanks!! Your review matters a lot!", icon="💚")
+
+    # show AI response in a styled box
+    st.markdown("""
+        ### ❤️ We're Listening  
+    """)
+
+    st.info(result.get("user_response", ""))

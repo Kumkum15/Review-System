@@ -50,9 +50,10 @@ if df.empty:
     st.info("No data found.")
 else:
     st.dataframe(
-        df[["id", "rating", "review", "user_response", "summary", "actions", "created_at"]],
-        use_container_width=True
-    )
+    df[["id", "rating", "review", "user_response", "summary", "actions"]].reset_index(drop=True),
+    use_container_width=True
+)
+
 
 
 # -----------------------------
