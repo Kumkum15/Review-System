@@ -11,4 +11,4 @@ class Submission(Base):
     user_response = Column(Text, nullable=True)
     summary = Column(Text, nullable=True)
     actions = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

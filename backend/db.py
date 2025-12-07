@@ -1,15 +1,9 @@
-# backend/db.py
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-DB_FILE = os.environ.get("DB_FILE", "submissions.db")
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{DB_FILE}"
-
-# Connect args for SQLite for multi-thread
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# sqlite file in project (kept simple)
+DB_PATH = os.environ.get("DATABASE_URL", "sqlite:///./submissions.db")
+engine = create_engine(DB_PATH, connect_args={"check_same_thread": False} if "sqlite" in DB_PATH else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

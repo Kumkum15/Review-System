@@ -1,25 +1,26 @@
-# Python
+# Bytecode
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
 
 # env
 .env
 .env.example
-*.env
-
-# SQLite DB
-*.db
-submissions.db
-
-# virtualenv
-venv/
 .env.local
-
-# VSCode
-.vscode/
+.env.*.local
+secrets/
+*.db
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Virtual env
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Streamlit / Render
+*.log
