@@ -7,7 +7,7 @@ from .ai_utils import generate_user_response, generate_summary, generate_actions
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
-# create tables
+# create DB tables
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Review System Backend")
@@ -41,25 +41,24 @@ class SubmissionOut(BaseModel):
     created_at: str
 
     class Config:
-        from_attributes = True
+        orm_mode = True
 
 @app.post("/submit", response_model=SubmissionOut)
 def submit(payload: SubmissionIn, db: Session = Depends(get_db)):
     if not (1 <= payload.rating <= 5):
         raise HTTPException(status_code=400, detail="rating must be 1-5")
 
-    # Generate AI text – these functions always return a string (see ai_utils)
-    user_response = generate_user_response(payload.rating, payload.review)
-    summary = generate_summary(payload.review)
-    actions = generate_actions(payload.rating, payload.review)
+    # Generate AI results; always get strings
+    user_response = generate_user_response(payload.rating, payload.review) or "(AI error) no reply"
+    summary = generate_summary(payload.review) or "(AI error) no summary"
+    actions = generate_actions(payload.rating, payload.review) or "(AI error) no actions"
 
-    # Save
     item = Submission(
         rating=payload.rating,
         review=payload.review,
-        user_response=user_response,
-        summary=summary,
-        actions=actions
+        user_response=str(user_response),
+        summary=str(summary),
+        actions=str(actions),
     )
     db.add(item)
     db.commit()
@@ -72,7 +71,7 @@ def submit(payload: SubmissionIn, db: Session = Depends(get_db)):
         user_response=item.user_response,
         summary=item.summary,
         actions=item.actions,
-        created_at=item.created_at.isoformat()
+        created_at=item.created_at.isoformat(),
     )
 
 @app.get("/submissions")
@@ -86,8 +85,9 @@ def list_submissions(db: Session = Depends(get_db)):
             "user_response": r.user_response,
             "summary": r.summary,
             "actions": r.actions,
-            "created_at": r.created_at.isoformat()
-        } for r in rows
+            "created_at": r.created_at.isoformat(),
+        }
+        for r in rows
     ]
 
 @app.get("/stats")
@@ -100,7 +100,8 @@ def stats(db: Session = Depends(get_db)):
         dist[str(r.rating)] += 1
     return {"total": total, "average_rating": avg_rating, "distribution": dist}
 
+# For local run:
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=port)
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=port, reload=True)

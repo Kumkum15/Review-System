@@ -1,26 +1,14 @@
-# Bytecode
+# Python
 __pycache__/
 *.pyc
-
-# env
-.env
-.env.example
-.env.local
-.env.*.local
-secrets/
-*.db
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Virtual env
 venv/
-.venv/
+.env.example
+.env
+.env.*
+/submissions.db
+.DS_Store
 
-# IDE
-.vscode/
-.idea/
+# Streamlit secrets
+/.streamlit/
 
-# Streamlit / Render
-*.log
+# Do not commit API keys
