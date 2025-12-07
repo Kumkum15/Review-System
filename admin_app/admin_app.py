@@ -6,7 +6,7 @@ import plotly.express as px
 # -------------------------------
 # BACKEND URL
 # -------------------------------
-BACKEND_URL = "https://review-system-yb2p.onrender.com"   # ← your backend API
+BACKEND_URL = "https://review-system-yb2p.onrender.com"
 
 
 st.set_page_config(page_title="Admin Dashboard", layout="wide")

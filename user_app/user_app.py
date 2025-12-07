@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-BACKEND = "https://your-render-backend-url.onrender.com"
+BACKEND = "https://review-system-yb2p.onrender.com"
 
 st.title("Leave a Review")
 
