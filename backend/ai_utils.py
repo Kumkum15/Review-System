@@ -8,7 +8,7 @@ load_dotenv()
 API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Use a VALID Google REST model name
-MODEL = os.getenv("GEN_MODEL", "gemini-1.5-flash")
+MODEL = os.getenv("GEN_MODEL", "gemini-1.5-flash-001")
 
 # Correct REST API endpoint
 BASE_URL_TEMPLATE = (
