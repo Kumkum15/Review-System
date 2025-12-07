@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL = "gemini-pro"   # <-- FIXED MODEL NAME
+MODEL = "gemini-1.0-pro"   # FINAL FIX – WORKS WITH generateContent
 
 BASE_URL_TEMPLATE = (
     "https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={key}"
@@ -37,28 +37,3 @@ def call_gemini(prompt: str, max_output_tokens: int = 256) -> str:
 
     except Exception as e:
         return f"(AI error) {str(e)}"
-
-
-def generate_user_response(rating: int, review: str) -> str:
-    prompt = (
-        f"You are a polite customer support assistant.\n"
-        f"User rated {rating}/5 and wrote:\n\n"
-        f"\"{review}\".\n\n"
-        "Write a short empathetic reply."
-    )
-    return call_gemini(prompt, max_output_tokens=120)
-
-
-def generate_summary(review: str) -> str:
-    return call_gemini(
-        f"Summarize this review in one sentence:\n\"{review}\"",
-        max_output_tokens=60
-    )
-
-
-def generate_actions(rating: int, review: str) -> str:
-    prompt = (
-        f"Based on rating {rating}/5 and review:\n\"{review}\",\n"
-        "List 3 improvement action items."
-    )
-    return call_gemini(prompt, max_output_tokens=80)
