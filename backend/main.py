@@ -44,12 +44,10 @@ def submit(payload: SubmissionIn, db: Session = Depends(get_db)):
     if not (1 <= payload.rating <= 5):
         raise HTTPException(status_code=400, detail="Rating must be between 1–5")
 
-    # Generate using HuggingFace + fallback
     user_response = generate_user_response(payload.rating, payload.review)
     summary = generate_summary(payload.review)
     actions = generate_actions(payload.rating, payload.review)
 
-    # Store in DB
     item = Submission(
         rating=payload.rating,
         review=payload.review,
@@ -64,7 +62,7 @@ def submit(payload: SubmissionIn, db: Session = Depends(get_db)):
     return {
         "message": "Review stored successfully",
         "id": item.id,
-        "ai_response": user_response,
+        "user_response": user_response,   # FIXED
         "summary": summary,
         "actions": actions
     }
@@ -75,7 +73,8 @@ def submit(payload: SubmissionIn, db: Session = Depends(get_db)):
 # -------------------------
 @app.get("/submissions")
 def list_submissions(db: Session = Depends(get_db)):
-    return db.query(Submission).order_by(Submission.created_at.desc()).all()
+    return db.query(Submission).order_by(Submission.id.asc()).all()  # FIXED
+
 
 
 # -------------------------

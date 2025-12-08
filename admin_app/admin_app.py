@@ -51,8 +51,10 @@ if df.empty:
 else:
     st.dataframe(
     df[["id", "rating", "review", "user_response", "summary", "actions"]].reset_index(drop=True),
-    use_container_width=True
+    use_container_width=True,
+    hide_index=True   # ← FIX ADDED
 )
+
 
 
 

@@ -14,28 +14,20 @@ review_text = st.text_area("Write your review")
 # Submit Button
 # ---------------------------------------------------
 if st.button("Submit Review"):
-
-    # Validation
+    
     if rating is None or review_text.strip() == "":
         st.error("Please provide both rating and review.")
     else:
         payload = {"rating": rating, "review": review_text}
+        res = requests.post(f"{BACKEND}/submit", json=payload)
 
-        try:
-            r = requests.post(f"{BACKEND}/submit", json=payload)
+        if res.status_code == 200:
+            data = res.json()
+            ai_response = data["user_response"]   # only AI response
 
-            if r.status_code == 200:
-                result = r.json()
+            st.success("Thanks!! Your review matters a lot!")
 
-                # Success Message
-                st.success("Thanks!! Your review matters a lot!", icon="💚")
-
-                # === AI RESPONSE BOX ===
-                st.markdown("### ❤️ We're Listening")
-                st.info(result.get("user_response", "No AI response"))
-
-            else:
-                st.error("Server error. Please try again later.")
-
-        except Exception as e:
-            st.error(f"Network error: {str(e)}")
+            st.subheader("❤️ We're Listening")
+            st.info(ai_response)
+        else:
+            st.error("Something went wrong.")
